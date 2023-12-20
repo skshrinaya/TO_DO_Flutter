@@ -17,7 +17,7 @@ class Home extends StatelessWidget{
                 Container(
                   margin: EdgeInsets.only(top:50,bottom: 20,),
                   child: Text('All TO-DO',style: TextStyle(
-                   56, fontSize:30,
+                    fontSize:30,
                     fontWeight:FontWeight.w500,
                   ),),
                 ),
