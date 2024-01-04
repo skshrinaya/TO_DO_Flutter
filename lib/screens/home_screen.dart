@@ -4,7 +4,9 @@ import '../model/todo.dart';
 
 class HomeScreen extends StatelessWidget {
   final ToDo todo;
-  const HomeScreen({Key? key,required this.todo}): super(key:key);
+  final ToDoChange;
+  final ToDoDelete;
+  const HomeScreen({Key? key,required this.todo,required this.ToDoChange,required this.ToDoDelete}): super(key:key);
 
   @override
   Widget build(BuildContext context){
@@ -12,7 +14,8 @@ class HomeScreen extends StatelessWidget {
       margin: EdgeInsets.only(bottom: 20),
       child:ListTile(
         onTap: (){
-          print('Clicked');
+          //print('Clicked');
+          ToDoChange(todo);
         },
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20),),
         tileColor: Colors.white70,
@@ -30,7 +33,9 @@ class HomeScreen extends StatelessWidget {
             color:Colors.white,
             iconSize: 18,
             icon: Icon(Icons.delete),
-            onPressed: () {},
+            onPressed: () {
+              ToDoDelete(todo.id);
+            },
           ),
         ),
       ),

@@ -2,10 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:untitled/model/todo.dart';
 import 'package:untitled/screens/home_screen.dart';
 
-class Home extends StatelessWidget{
+class Home extends StatefulWidget{
    Home ({Key? key}): super (key: key);
 
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
   final todolist=ToDo.todoList();
+  List<ToDo> found=[];
+  final controller=TextEditingController();
+  
+  @override
+  void initState() {
+    found=todolist;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context){
     return Scaffold(
@@ -29,8 +43,10 @@ class Home extends StatelessWidget{
                         ),),
                       ),
 
-                      for( ToDo todo in todolist)
-                        HomeScreen(todo: todo,),
+                      for( ToDo todo in found.reversed)
+                        HomeScreen(todo: todo,
+                        ToDoChange: handling,
+                        ToDoDelete: delete,),
 
 
 
@@ -40,9 +56,29 @@ class Home extends StatelessWidget{
               ],
             ),
             ),
+         Align(
+           alignment: Alignment.bottomCenter,
+           child:Row(children: [
+             Expanded(
+                 child: Container(
+                   margin: EdgeInsets.only(bottom:20,right:20,left:20),
+                   decoration: BoxDecoration(
+                     color: Colors.white,
+
+
+                   ),
+                   child:TextField(
+                     controller: controller,
+                     decoration: InputDecoration(
+                       hintText: "Add New"
+                     ),
+                   ),
+                 ),)
+           ]),
+         ),
 
          Container(
-           margin:EdgeInsets.only(top: 600,left:300,),
+           margin:EdgeInsets.only(top: 600,left:300),
 
            child:ElevatedButton(
              child:Text('+',
@@ -50,7 +86,9 @@ class Home extends StatelessWidget{
                  fontSize: 40,
                ), ),
 
-             onPressed: () {},
+             onPressed: () {
+               add(controller.text);
+             },
 
 
            ),
@@ -60,6 +98,40 @@ class Home extends StatelessWidget{
       );
 
   }
+
+  void handling(ToDo todo){
+    setState(() {
+      todo.isDone=!todo.isDone;
+    });
+
+  }
+  void delete(String id){
+    setState(() {
+      todolist.removeWhere((item) => item.id==id);
+    });
+
+  }
+
+  void add(String todo){
+    setState(() {
+      todolist.add(ToDo(id: DateTime.now().millisecondsSinceEpoch.toString(), text: todo,));
+    });
+    controller.clear();
+  }
+  
+  void search(String searchItem){
+    List<ToDo> result=[];
+    if(searchItem.isEmpty){
+      result=todolist;
+    }
+    else{
+      result=todolist.where((item) => item.text!.toLowerCase().contains(searchItem.toLowerCase())).toList();
+    }
+    setState(() {
+      found=result;
+    });
+  }
+
 Widget searchBox(){
     return Container(
           padding:EdgeInsets.symmetric(horizontal: 15),
@@ -68,6 +140,7 @@ Widget searchBox(){
               borderRadius: BorderRadius.circular(20)
           ),
           child: TextField(
+            onChanged: (value)=>search(value),
               decoration: InputDecoration(
                 contentPadding: EdgeInsets.all(0),
                 prefixIcon: Icon(
@@ -85,17 +158,12 @@ Widget searchBox(){
         );
 
 }
+
   AppBar buildAppBar() {
     return AppBar(
       backgroundColor: Colors.blue,
       elevation: 0,
-      title: Row(children:[
-        Icon(
-          Icons.menu,
-          color: Colors.white,
-          size:30,
-        )
-      ])
+       
     );
   }
 }
